@@ -1,0 +1,85 @@
+[gd_scene load_steps=7 format=3 uid="uid://dfiiwovfalikt"]
+
+[ext_resource type="PackedScene" uid="uid://b1gfqdwc6f2hp" path="res://gui.tscn" id="3_2arex"]
+[ext_resource type="Script" path="res://Camera3D_1.gd" id="4_1vjid"]
+[ext_resource type="PackedScene" uid="uid://bw5oc4tbywni6" path="res://testground.tscn" id="6_wp6fq"]
+[ext_resource type="PackedScene" uid="uid://biy105gs20ig6" path="res://testground_2.tscn" id="7_8okqr"]
+[ext_resource type="PackedScene" uid="uid://b0f11r84rigje" path="res://gemini.tscn" id="7_ier4y"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_1rcwf"]
+font_size = 14
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Camera3D2" type="Camera3D" parent="." node_paths=PackedStringArray("car")]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 2.5, 6)
+projection = 2
+fov = 45.0
+size = 0.1
+frustum_offset = Vector2(0, -0.02)
+near = 0.1
+script = ExtResource("4_1vjid")
+car = NodePath("../gemini2")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.858155, 0.137327, 0.494684, -0.513391, 0.229548, 0.826884, 0, -0.963561, 0.267491, 0, 1.83298, 0)
+shadow_enabled = true
+
+[node name="gemini2" parent="." instance=ExtResource("7_ier4y")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="testground" parent="." instance=ExtResource("6_wp6fq")]
+
+[node name="testground2" parent="." instance=ExtResource("7_8okqr")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -220.0
+offset_right = 300.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(600, 200)
+render_target_update_mode = 4
+
+[node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport" node_paths=PackedStringArray("car")]
+v_offset = 0.5
+fov = 10.0
+near = 0.1
+script = ExtResource("4_1vjid")
+offset = Vector3(-4, 0, -5)
+car = NodePath("../../../gemini2")
+mode = 2
+additional_rot = Vector3(-0.04, -2.51, 0)
+
+[node name="Control" parent="." instance=ExtResource("3_2arex")]
+visible = false
+
+[node name="Control2" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 640.0
+offset_bottom = 480.0
+
+[node name="Label" type="Label" parent="Control2"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -74.0
+offset_right = 74.0
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "Arrow keys: Drive R: Reset T: Toggle Info"
+label_settings = SubResource("LabelSettings_1rcwf")
+
+[connection signal="show_telemetry" from="gemini2" to="Control" method="_on_show_telemetry"]
