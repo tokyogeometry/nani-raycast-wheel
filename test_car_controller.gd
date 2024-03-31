@@ -8,8 +8,20 @@ var current_steering_angle: float = 0
 @export var ackermann_wheelbase: float = 2
 @export var ackermann_wheel_tread: float = 1.4
 
-@export var max_drive_torque: float = 600
+@export var max_drive_torque: float = 100
 @export var number_of_driving_wheels: int = 2
+var drive_load_l
+var drive_load_r
+
+var is_engine_running: bool = true
+var engine_ang_vel: float # rad/s
+var driveshaft_ang_vel: float
+@export var engine_ang_vel_max: float = 733
+@export var flywheel_moi: float = 0.1 # mass[kg] * ( radius[m] ^ 2 )
+@export var clutch_capacity_max_static: float = 120
+@export var clutch_capacity_max_dynamic: float = 100
+var is_clutch_slipping: bool = false
+var clutch_output_torque: float
 
 @export var max_brake_torque: float = 500
 var reset_pos: bool = false
@@ -21,7 +33,10 @@ func _ready():
 	pass
 
 func _input(event):
-	if event is InputEventKey and event.pressed:
+	if event is InputEventKey and event.is_pressed():
+		if event.keycode == KEY_Z:
+			is_clutch_slipping = true
+	if event is InputEventKey and event.is_released():
 		if event.keycode == KEY_R:
 			reset_pos = true
 
@@ -32,14 +47,6 @@ func _process(delta):
 	# Caster angle
 	raycast_wheels[0].wheel_mesh.rotate(Vector3.RIGHT, 0.2)
 	raycast_wheels[1].wheel_mesh.rotate(Vector3.RIGHT, 0.2)
-	
-	#_on_show_telemetry(
-		#ang_vel: Array,
-		#susp_force: Array,
-		#tire_force_fwd: Array,
-		#tire_force_right: Array,
-		#steer_ang: Array,
-		#drive_torque: Array)
 		
 	var list_ang_vel = [
 		raycast_wheels[0].ang_vel,
@@ -71,26 +78,16 @@ func _process(delta):
 		raycast_wheels[2].lat_force,
 		raycast_wheels[3].lat_force]
 		
-	var list_rot_y = [
-		raycast_wheels[0].rotation.y,
-		raycast_wheels[1].rotation.y,
-		raycast_wheels[2].rotation.y,
-		raycast_wheels[3].rotation.y]
-		
-	var list_drive_torque = [
-		raycast_wheels[0].drive_torque,
-		raycast_wheels[1].drive_torque,
-		raycast_wheels[2].drive_torque,
-		raycast_wheels[3].drive_torque]
-		
 	show_telemetry.emit(
+		engine_ang_vel,
+		driveshaft_ang_vel,
+		is_clutch_slipping,
+		clutch_output_torque,
 		list_ang_vel, 
 		list_susp_force, 
 		list_planar_vec, 
 		list_long_force, 
-		list_lat_force, 
-		list_rot_y, 
-		list_drive_torque)
+		list_lat_force)
 	
 func _physics_process(delta: float) -> void:
 	if reset_pos == true:
@@ -99,6 +96,8 @@ func _physics_process(delta: float) -> void:
 		rotation = Vector3.ZERO
 		linear_velocity = Vector3(0,1,0)
 		angular_velocity = Vector3.ZERO
+		
+	# steering
 		
 	var steering_target = Input.get_axis("ui_right", "ui_left") * max_steer_angle_radians
 	
@@ -112,16 +111,43 @@ func _physics_process(delta: float) -> void:
 	raycast_wheels[0].rotation.y = ackermann_steering(current_steering_angle, ackermann_wheelbase, ackermann_wheel_tread / -2) 
 	raycast_wheels[1].rotation.y = ackermann_steering(current_steering_angle, ackermann_wheelbase, ackermann_wheel_tread / 2)
 	
-	var drive_input = Input.get_action_strength("ui_up")
+	# driving wheels
+	
+	var throttle_input: float
+	var gear_ratio: float = 4.0 # gear ratios: 3.7 1.9 1.3 1.0 0.8 -3.2
+	var clutch_input: float
+	var engine_damping_torque: float = 0.1
+	
+	if engine_ang_vel < engine_ang_vel_max: throttle_input = Input.get_action_strength("ui_up")
+		
+	if Input.is_key_pressed(KEY_Z):
+		clutch_input = 1.0
+		is_clutch_slipping = true
+	else: clutch_input = 0.0
+	
+	driveshaft_ang_vel = (raycast_wheels[0].ang_vel + raycast_wheels[1].ang_vel) * 0.5 * gear_ratio
+	
+	var clutch_capacity_static = clutch_capacity_max_static * (1.0 - clutch_input)
+	
+	if is_clutch_slipping == true:
+		var clutch_capacity_dynamic = clutch_capacity_max_dynamic * (1.0 - clutch_input)
+		clutch_output_torque = clutch_capacity_dynamic * sign(engine_ang_vel - driveshaft_ang_vel)
+		engine_ang_vel += ((max_drive_torque * throttle_input) - (engine_ang_vel * engine_damping_torque)) / flywheel_moi * delta
+		if driveshaft_ang_vel > engine_ang_vel * 0.95 and driveshaft_ang_vel < engine_ang_vel * 1.05 and abs(clutch_output_torque) <= clutch_capacity_static:
+			is_clutch_slipping = false
+	else:
+		clutch_output_torque = (max_drive_torque * throttle_input) - (engine_ang_vel * engine_damping_torque)
+		engine_ang_vel = driveshaft_ang_vel
+		if clutch_output_torque > clutch_capacity_static:
+			is_clutch_slipping = true
+		
+	raycast_wheels[0].drive_torque = clutch_output_torque * gear_ratio / number_of_driving_wheels
+	raycast_wheels[1].drive_torque = clutch_output_torque * gear_ratio / number_of_driving_wheels
+	
+	# applying brakes
+	
 	var brake_input = Input.get_action_strength("ui_down")
 	
-	if max(abs(raycast_wheels[0].ang_vel), abs(raycast_wheels[1].ang_vel)) > 700:
-		raycast_wheels[0].drive_torque = 0
-		raycast_wheels[1].drive_torque = 0
-	else:
-		raycast_wheels[0].drive_torque = max_drive_torque / number_of_driving_wheels * drive_input
-		raycast_wheels[1].drive_torque = max_drive_torque / number_of_driving_wheels * drive_input
-		
 	for i in raycast_wheels.size():
 		raycast_wheels[i].brake_torque = brake_input * max_brake_torque
 		raycast_wheels[i].calc_suspension_force(delta)

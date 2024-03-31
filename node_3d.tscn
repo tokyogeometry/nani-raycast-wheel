@@ -79,7 +79,7 @@ offset_left = -74.0
 offset_right = 74.0
 offset_bottom = 23.0
 grow_horizontal = 2
-text = "Arrow keys: Drive R: Reset T: Toggle Info"
+text = "Arrow keys: Drive   Z: Declutch   R: Reset   T: Toggle Info"
 label_settings = SubResource("LabelSettings_1rcwf")
 
 [connection signal="show_telemetry" from="gemini2" to="Control" method="_on_show_telemetry"]
