@@ -5,7 +5,7 @@
 [sub_resource type="LabelSettings" id="LabelSettings_la0qm"]
 font_size = 14
 
-[node name="Control" type="Control" node_paths=PackedStringArray("labels")]
+[node name="Control" type="Control" node_paths=PackedStringArray("labels", "label2")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,39 +14,49 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_vkl06")
 labels = [NodePath("Label"), NodePath("Label2"), NodePath("Label3"), NodePath("Label4")]
+label2 = NodePath("Label5")
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 0
 offset_left = 27.0
-offset_top = 26.0
+offset_top = 212.0
 offset_right = 67.0
-offset_bottom = 49.0
+offset_bottom = 235.0
 text = "text"
 label_settings = SubResource("LabelSettings_la0qm")
 
 [node name="Label2" type="Label" parent="."]
 layout_mode = 0
 offset_left = 318.0
-offset_top = 26.0
+offset_top = 212.0
 offset_right = 358.0
-offset_bottom = 52.0
+offset_bottom = 238.0
 text = "text"
 label_settings = SubResource("LabelSettings_la0qm")
 
 [node name="Label3" type="Label" parent="."]
 layout_mode = 0
 offset_left = 27.0
-offset_top = 236.0
+offset_top = 338.0
 offset_right = 67.0
-offset_bottom = 262.0
+offset_bottom = 364.0
 text = "text"
 label_settings = SubResource("LabelSettings_la0qm")
 
 [node name="Label4" type="Label" parent="."]
 layout_mode = 0
 offset_left = 318.0
-offset_top = 236.0
+offset_top = 338.0
 offset_right = 358.0
-offset_bottom = 262.0
+offset_bottom = 364.0
+text = "text"
+label_settings = SubResource("LabelSettings_la0qm")
+
+[node name="Label5" type="Label" parent="."]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 22.0
+offset_right = 65.0
+offset_bottom = 48.0
 text = "text"
 label_settings = SubResource("LabelSettings_la0qm")

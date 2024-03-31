@@ -32,8 +32,10 @@ var lat_force: float = 0
 var ang_vel: float # Angular velocity
 var drive_torque: float
 var brake_torque: float
-var wheel_inertia: float
+var wheel_moi: float # Moment of inertia
 var rolling_resistance: float = 10
+var prev_ang_vel: float = 0
+var drive_load: float = 0.5
 
 # Rendering
 
@@ -47,7 +49,7 @@ func _ready():
 	reset_wheel_mesh_position(0)
 	set_target_position(transform.basis.y * -(susp_rest_length + tire_radius))
 	prev_pos = global_transform.origin
-	wheel_inertia = 0.5 * wheel_mass * pow(tire_radius, 2)
+	wheel_moi = 0.5 * wheel_mass * pow(tire_radius, 2)
 
 func _process(delta):
 	pass
@@ -90,9 +92,10 @@ func calc_tire_force(delta):
 		
 	if is_colliding():
 		
-		# if statements switch tire model to a simpler one when in very low speed
-		# to suppress shaking derived from equation divergence
-				
+		# if statements switch the tire model to a simpler one
+		# when the wheel is moving at very low speeds
+		# to suppress shaking caused by equation divergence.
+		
 		if abs(forward_vel) < 0.1 and abs(local_vel.x) < 0.1:
 			lat_force = -local_vel.x / delta * wheel_mass
 		else:
@@ -112,13 +115,15 @@ func calc_tire_force(delta):
 		chassis.apply_force(global_transform.basis.x * lat_force + global_transform.basis.z * long_force, collision_pos)
 		
 	var net_torque = (long_force * tire_radius) + drive_torque
+	
 	if abs(ang_vel) < 5 and brake_torque > abs(net_torque):
 		ang_vel = 0
 	else:
 		net_torque -= (brake_torque + rolling_resistance) * sign(ang_vel)
-		ang_vel += delta * net_torque / wheel_inertia
-		# ang_vel += delta * net_torque / (wheel_inertia + drive_inertia)
-		
+		ang_vel += delta * net_torque / wheel_moi
+	
+	prev_ang_vel = ang_vel
+
 func reset_wheel_mesh_position(delta):
 	wheel_mesh.position = Vector3(position.x, position.y - susp_spring_length, position.z)
 	

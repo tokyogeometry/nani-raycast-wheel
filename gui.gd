@@ -2,6 +2,8 @@ extends Control
 
 @export var labels : Array[Node]
 var count: int = 0
+
+@export var label2: Label
 	
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -17,16 +19,24 @@ func _process(delta):
 	count += 1
 
 func _on_show_telemetry(
+		eng_ang_vel: float,
+		driveshaft_ang_vel: float,
+		is_clutch_slipping: bool,
+		clutch_output_torque: float,
 		ang_vel: Array,
 		susp_force: Array,
 		planar_vec: Array,
 		tire_force_fwd: Array,
-		tire_force_right: Array,
-		steer_ang: Array,
-		drive_torque: Array):
+		tire_force_right: Array):
 
-	if count == 5:
+	if count == 6:
 		count = 0
+		
+		label2.set_text("Engine ang vel = %1.0f" % eng_ang_vel +
+			"\nDriveshaft ang vel = %1.1f" % driveshaft_ang_vel +
+			"\nIs clutch slipping = " + str(is_clutch_slipping) +
+			"\nClutch output tor = %1.1f" % clutch_output_torque)
+		
 		for i in labels.size():
 			labels[i].set_text(
 			"\nAng vel = %1.1f" % ang_vel[i] +
@@ -34,6 +44,4 @@ func _on_show_telemetry(
 			"\nLocal vel unit vec X, Z = %1.2f, " % planar_vec[i].x +
 			"%1.2f" % planar_vec[i].y +
 			"\nTire force X, Z = %1.1f, " % tire_force_right[i] +
-			"%1.1f" % tire_force_right[i] +
-			"\nSteer ang = %1.2f" % steer_ang[i] +
-			"\nDrive torque = %1.1f" % drive_torque[i])
+			"%1.1f" % tire_force_fwd[i])
