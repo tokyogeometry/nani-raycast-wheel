@@ -21,7 +21,7 @@ var susp_force: float
 
 # Tire
 
-@export var wheel_mass: float = 10
+@export var wheel_mass: float = 12
 @export var grip_factor: float = 1
 var prev_pos: Vector3
 var forward_vel: float
@@ -35,7 +35,6 @@ var brake_torque: float
 var wheel_moi: float # Moment of inertia
 var rolling_resistance: float = 10
 var prev_ang_vel: float = 0
-var drive_load: float = 0.5
 
 # Rendering
 
@@ -120,7 +119,7 @@ func calc_tire_force(delta):
 		ang_vel = 0
 	else:
 		net_torque -= (brake_torque + rolling_resistance) * sign(ang_vel)
-		ang_vel += delta * net_torque / wheel_moi
+		ang_vel += net_torque / wheel_moi * delta
 	
 	prev_ang_vel = ang_vel
 
