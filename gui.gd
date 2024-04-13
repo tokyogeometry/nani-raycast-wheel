@@ -19,8 +19,10 @@ func _process(delta):
 	count += 1
 
 func _on_show_telemetry(
+		speed: float,
 		eng_ang_vel: float,
 		driveshaft_ang_vel: float,
+		clutch_capacity: float,
 		is_clutch_slipping: bool,
 		clutch_output_torque: float,
 		ang_vel: Array,
@@ -32,9 +34,13 @@ func _on_show_telemetry(
 	if count == 6:
 		count = 0
 		
-		label2.set_text("Engine ang vel = %1.0f" % eng_ang_vel +
-			"\nDriveshaft ang vel = %1.1f" % driveshaft_ang_vel +
+		var speed_kmph = speed * 3.6
+		
+		label2.set_text("Speed (kmph) = %1.0f" % speed_kmph +
+			"\nEngine ang vel (rad/s) = %1.1f" % eng_ang_vel +
+			"\nDriveshaft ang vel (rad/s) = %1.1f" % driveshaft_ang_vel +
 			"\nIs clutch slipping = " + str(is_clutch_slipping) +
+			"\nCurr clutch capacity = %1.1f" % clutch_capacity +
 			"\nClutch output tor = %1.1f" % clutch_output_torque)
 		
 		for i in labels.size():

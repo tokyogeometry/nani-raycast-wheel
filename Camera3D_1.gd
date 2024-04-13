@@ -1,6 +1,6 @@
 extends Camera3D
 
-@export var offset: Vector3 = Vector3(0, 2.5, 6)
+@export var offset: Vector3 = Vector3(0, 2, 6)
 @export var car: Node3D
 @export_enum("Dolly Track", "Fix Pos + Y Rot", "Fix Pos + Full Rot") var mode: int
 @export var additional_rot: Vector3 = Vector3(0, 0, 0)

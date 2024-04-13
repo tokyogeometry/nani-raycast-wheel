@@ -55,8 +55,8 @@ label_settings = SubResource("LabelSettings_la0qm")
 [node name="Label5" type="Label" parent="."]
 layout_mode = 0
 offset_left = 25.0
-offset_top = 22.0
+offset_top = 80.0
 offset_right = 65.0
-offset_bottom = 48.0
+offset_bottom = 106.0
 text = "text"
 label_settings = SubResource("LabelSettings_la0qm")
