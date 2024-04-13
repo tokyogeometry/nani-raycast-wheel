@@ -112,7 +112,9 @@ func calc_tire_force(delta):
 			
 		var collision_pos = get_collision_point() - chassis.global_transform.origin
 		chassis.apply_force(global_transform.basis.x * lat_force + global_transform.basis.z * long_force, collision_pos)
-		
+	else:
+		long_force = 0
+	
 	var net_torque = (long_force * tire_radius) + drive_torque
 	
 	if abs(ang_vel) < 5 and brake_torque > abs(net_torque):
