@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://dfiiwovfalikt"]
+[gd_scene load_steps=10 format=3 uid="uid://dfiiwovfalikt"]
 
 [ext_resource type="PackedScene" uid="uid://b1gfqdwc6f2hp" path="res://gui.tscn" id="3_2arex"]
 [ext_resource type="Script" path="res://Camera3D_1.gd" id="4_1vjid"]
+[ext_resource type="PackedScene" uid="uid://bifb0xhht2hk1" path="res://testcircuit.tscn" id="6_osw4l"]
 [ext_resource type="PackedScene" uid="uid://bw5oc4tbywni6" path="res://testground.tscn" id="6_wp6fq"]
 [ext_resource type="PackedScene" uid="uid://biy105gs20ig6" path="res://testground_2.tscn" id="7_8okqr"]
 [ext_resource type="PackedScene" uid="uid://b0f11r84rigje" path="res://gemini.tscn" id="7_ier4y"]
@@ -9,10 +10,15 @@
 [sub_resource type="LabelSettings" id="LabelSettings_1rcwf"]
 font_size = 14
 
+[sub_resource type="PrismMesh" id="PrismMesh_xiyjf"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_6x5r8"]
+data = PackedVector3Array(0, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0, 0.5, 0.5, 0, 0.5, -0.5, 0.5, -0.5, 0.5, 0, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0, 0.5, -0.5, 0, 0.5, 0.5, -0.5, -0.5, -0.5, 0, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5)
+
 [node name="Node3D" type="Node3D"]
 
 [node name="Camera3D2" type="Camera3D" parent="." node_paths=PackedStringArray("car")]
-transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 2.5, 6)
+transform = Transform3D(1, 0, 0, 0, 0.977933, 0.208919, 0, -0.208919, 0.977933, 0, 1.98276, 6)
 projection = 2
 fov = 45.0
 size = 0.1
@@ -20,6 +26,7 @@ frustum_offset = Vector2(0, -0.02)
 near = 0.1
 script = ExtResource("4_1vjid")
 car = NodePath("../gemini2")
+mode = 1
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.858155, 0.137327, 0.494684, -0.513391, 0.229548, 0.826884, 0, -0.963561, 0.267491, 0, 1.83298, 0)
@@ -75,11 +82,26 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -74.0
-offset_right = 74.0
-offset_bottom = 23.0
+offset_left = -255.5
+offset_top = 8.0
+offset_right = 255.5
+offset_bottom = 77.0
 grow_horizontal = 2
-text = "Arrow keys: Drive   Z: Declutch   R: Reset   T: Toggle Info"
+text = "Reset = R   Toggle Info = T
+(Keyboard) Throttle = Up   Brakes = Down   Steer = LR   Declutch = Z
+(Gamepad) Throttle = RT   Brakes = R Stick Up   Steer = L Stick   Declutch = LT"
 label_settings = SubResource("LabelSettings_1rcwf")
+
+[node name="testcircuit" parent="." instance=ExtResource("6_osw4l")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.14957, 660.811)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(6.01525, 0, 5.37404, 0, 1.8026, 0, -13.4902, 0, 2.39627, 0, 0.657191, 38.5627)
+mesh = SubResource("PrismMesh_xiyjf")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_6x5r8")
 
 [connection signal="show_telemetry" from="gemini2" to="Control" method="_on_show_telemetry"]

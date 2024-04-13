@@ -1,0 +1,18 @@
+[gd_resource type="AudioBusLayout" load_steps=3 format=3 uid="uid://cwdgtkjaqy7bf"]
+
+[sub_resource type="AudioEffectLowPassFilter" id="AudioEffectLowPassFilter_kbhfe"]
+resource_name = "LowPassFilter"
+cutoff_hz = 8000.0
+
+[sub_resource type="AudioEffectReverb" id="AudioEffectReverb_ehl8q"]
+resource_name = "Reverb"
+damping = 1.0
+hipass = 0.88
+wet = 0.17
+
+[resource]
+bus/0/volume_db = -8.39524
+bus/0/effect/0/effect = SubResource("AudioEffectLowPassFilter_kbhfe")
+bus/0/effect/0/enabled = true
+bus/0/effect/1/effect = SubResource("AudioEffectReverb_ehl8q")
+bus/0/effect/1/enabled = true

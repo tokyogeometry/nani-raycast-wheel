@@ -1,7 +1,14 @@
-[gd_scene load_steps=20 format=3 uid="uid://b0f11r84rigje"]
+[gd_scene load_steps=30 format=3 uid="uid://b0f11r84rigje"]
 
 [ext_resource type="Script" path="res://test_car_controller.gd" id="1_xgo77"]
 [ext_resource type="Script" path="res://nani_raycast_wheel.gd" id="2_tgptp"]
+[ext_resource type="AudioStream" uid="uid://dxy28d56q5ulb" path="res://example4/example4_4000.wav" id="3_lsemc"]
+[ext_resource type="Script" path="res://carsound.gd" id="3_tyi0o"]
+[ext_resource type="AudioStream" uid="uid://csltckvug5o6w" path="res://example4/example4_off_4000.wav" id="4_ayuh6"]
+[ext_resource type="AudioStream" uid="uid://dsr27tq2ak6u5" path="res://example4/example4_8000.wav" id="6_ya267"]
+[ext_resource type="AudioStream" uid="uid://bcsxjojexrfi2" path="res://example4/example4_off_8000.wav" id="7_2lkpa"]
+[ext_resource type="AudioStream" uid="uid://bqvpmdv7wf5ru" path="res://example4/example4_2000.wav" id="7_i07gg"]
+[ext_resource type="AudioStream" uid="uid://defblgobyhdjc" path="res://example4/example4_off_2000.wav" id="8_rmu0q"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_igxe5"]
 margin = 0.0
@@ -228,6 +235,18 @@ albedo_color = Color(0.25098, 0.25098, 0.25098, 1)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3vppi"]
 albedo_color = Color(0.25098, 0.25098, 0.25098, 1)
 
+[sub_resource type="Curve" id="Curve_7aohq"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_10e3g"]
+_data = [Vector2(0.25, 0), 0.0, 0.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_umlps"]
+_data = [Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
 [node name="RigidBody3D" type="RigidBody3D" node_paths=PackedStringArray("raycast_wheels")]
 mass = 800.0
 center_of_mass_mode = 1
@@ -298,3 +317,40 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.69, 0.3, 1.2)
 mesh = SubResource("ArrayMesh_a4173")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_3vppi")
+
+[node name="Node3D" type="Node3D" parent="." node_paths=PackedStringArray("car", "engine_sound_2k_on", "engine_sound_2k_off", "engine_sound_4k_on", "engine_sound_4k_off", "engine_sound_8k_on", "engine_sound_8k_off")]
+script = ExtResource("3_tyi0o")
+car = NodePath("..")
+engine_sound_2k_on = NodePath("AudioStreamPlayer3D5")
+engine_sound_2k_off = NodePath("AudioStreamPlayer3D6")
+engine_sound_4k_on = NodePath("AudioStreamPlayer3D")
+engine_sound_4k_off = NodePath("AudioStreamPlayer3D2")
+engine_sound_8k_on = NodePath("AudioStreamPlayer3D3")
+engine_sound_8k_off = NodePath("AudioStreamPlayer3D4")
+mix2k_curve = SubResource("Curve_7aohq")
+mix4k_curve = SubResource("Curve_10e3g")
+mix8k_curve = SubResource("Curve_umlps")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.588, 0)
+stream = ExtResource("3_lsemc")
+
+[node name="AudioStreamPlayer3D2" type="AudioStreamPlayer3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.588, 0)
+stream = ExtResource("4_ayuh6")
+
+[node name="AudioStreamPlayer3D3" type="AudioStreamPlayer3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.588, 0)
+stream = ExtResource("6_ya267")
+
+[node name="AudioStreamPlayer3D4" type="AudioStreamPlayer3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.588, 0)
+stream = ExtResource("7_2lkpa")
+
+[node name="AudioStreamPlayer3D5" type="AudioStreamPlayer3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.588, 0)
+stream = ExtResource("7_i07gg")
+
+[node name="AudioStreamPlayer3D6" type="AudioStreamPlayer3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.588, 0)
+stream = ExtResource("8_rmu0q")
